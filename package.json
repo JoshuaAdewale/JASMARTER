@@ -1,0 +1,31 @@
+{
+  "name": "jasmarta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "JASMARTA - Your Property, Managed Smartly While You Travel.",
+  "workspaces": [
+    "backend",
+    "web",
+    "mobile"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev --workspace backend",
+    "dev:web": "npm run dev --workspace web",
+    "dev:mobile": "npm run start --workspace mobile",
+    "build:web": "npm run build --workspace web",
+    "start:backend": "npm run start --workspace backend",
+    "seed": "npm run seed --workspace backend"
+  },
+  "keywords": [
+    "property-management",
+    "real-estate",
+    "react-native",
+    "express",
+    "mongodb"
+  ],
+  "author": "Joshua Adewale",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
