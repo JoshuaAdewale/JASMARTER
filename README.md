@@ -8,6 +8,8 @@ JASMARTA is a cross-platform property management application built for individua
 
 ## 👀 See it first
 
+- **🖱️ Interactive demo — click the real app:** open **[`../JASMARTA-demo.html`](../JASMARTA-demo.html)** (workspace root). The entire React UI compiled into one offline file with a simulated API — sign in as `owner@jasmarta.app` / `tenant@jasmarta.app` / `admin@jasmarta.app` (password `password`), browse, apply for a lease, approve it, add listings. Details in [`demo/README.md`](demo/README.md).
+
 - **Live screenshots (real app, real API, real database):** **[`live/screens/`](live/screens)** — 14 captures taken while the stack was actually running. Health report in [`live/console.log`](live/console.log); notes in [`live/README.md`](live/README.md).
 - **Design walkthrough:** open **[`preview/JASMARTA-ui-preview.html`](preview/JASMARTA-ui-preview.html)** — one self-contained file with every web screen, every mobile screen, and the API surface. Captures in [`preview/screens/`](preview/screens) (21 images).
 

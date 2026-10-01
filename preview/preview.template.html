@@ -1,0 +1,1404 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JASMARTA — UI Preview</title>
+<style>
+  :root{
+    --brand-50:#eef6ff; --brand-100:#d9eaff; --brand-200:#bfdcff; --brand-500:#2563eb;
+    --brand-600:#1d4ed8; --brand-700:#1e40af;
+    --s50:#f8fafc; --s100:#f1f5f9; --s200:#e2e8f0; --s300:#cbd5e1; --s400:#94a3b8;
+    --s500:#64748b; --s600:#475569; --s700:#334155; --s800:#1e293b; --s900:#0f172a;
+    --green-bg:#dcfce7; --green-fg:#15803d;
+    --amber-bg:#fef3c7; --amber-fg:#b45309;
+    --orange-bg:#ffedd5; --orange-fg:#c2410c;
+    --blue-bg:#dbeafe;  --blue-fg:#1d4ed8;
+    --red-bg:#fee2e2;   --red-fg:#b91c1c;
+    --radius:12px;
+    --shadow:0 10px 30px -14px rgba(15,23,42,.22);
+    --shadow-lg:0 28px 60px -28px rgba(15,23,42,.38);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:#eef2f7; color:var(--s900);
+    font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; line-height:1.5;
+  }
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  /* ---------- top bar ---------- */
+  .topbar{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--s200)}
+  .topbar .wrap{display:flex;align-items:center;gap:14px;height:62px}
+  .mark{width:32px;height:32px;border-radius:9px;background:var(--brand-600);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
+  .brandname{font-weight:800;letter-spacing:-.02em;font-size:17px}
+  .tagline{font-size:12px;color:var(--s500);border-left:1px solid var(--s300);padding-left:12px;margin-left:4px}
+  .topnav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+  .topnav a{font-size:13px;color:var(--s600);padding:7px 12px;border-radius:999px}
+  .topnav a:hover{background:var(--brand-50);color:var(--brand-700)}
+
+  /* ---------- intro ---------- */
+  .intro{background:linear-gradient(135deg,var(--brand-600),var(--brand-700));color:#fff;padding:54px 0 58px}
+  .intro h1{margin:14px 0 0;font-size:40px;line-height:1.12;letter-spacing:-.03em;max-width:760px}
+  .intro h1 u{text-decoration-color:#fcd34d;text-decoration-thickness:5px;text-underline-offset:6px}
+  .intro p{color:var(--brand-100);max-width:660px;font-size:16px;margin:14px 0 0}
+  .pill{display:inline-block;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);padding:5px 13px;border-radius:999px;font-size:12.5px}
+  .stackrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+  .stackrow span{font-size:12px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16);padding:6px 12px;border-radius:999px}
+
+  /* ---------- sections ---------- */
+  section.block{padding:52px 0 8px}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--brand-600)}
+  .block h2{font-size:27px;letter-spacing:-.02em;margin:8px 0 6px}
+  .block .lead{color:var(--s600);font-size:15px;max-width:760px;margin:0}
+
+  /* ---------- reusable UI (mirrors Tailwind component classes) ---------- */
+  .card{background:#fff;border:1px solid var(--s200);border-radius:var(--radius);box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .p4{padding:16px}.p5{padding:20px}.p6{padding:24px}
+  .badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}
+  .b-green{background:var(--green-bg);color:var(--green-fg)}
+  .b-amber{background:var(--amber-bg);color:var(--amber-fg)}
+  .b-orange{background:var(--orange-bg);color:var(--orange-fg)}
+  .b-blue{background:var(--blue-bg);color:var(--blue-fg)}
+  .b-red{background:var(--red-bg);color:var(--red-fg)}
+  .b-slate{background:var(--s100);color:var(--s600)}
+  .b-brand{background:var(--brand-100);color:var(--brand-700)}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 16px;border-radius:9px;font-weight:600;font-size:13.5px;border:1px solid transparent;cursor:default}
+  .btn-primary{background:var(--brand-600);color:#fff}
+  .btn-secondary{background:#fff;border-color:var(--s300);color:var(--s700)}
+  .btn-dark{background:var(--s900);color:#fff}
+  .input{width:100%;padding:9px 12px;border:1px solid var(--s300);border-radius:9px;font-size:13px;color:var(--s700);background:#fff;font-family:inherit}
+  .input.ph{color:var(--s400)}
+  .h3{font-size:15px;font-weight:700;margin:0}
+  .muted{color:var(--s500);font-size:13px}
+  .tiny{font-size:11.5px;color:var(--s500)}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace}
+  .row{display:flex;align-items:center;gap:10px}
+  .between{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  hr.sep{border:0;border-top:1px solid var(--s100);margin:12px 0}
+  .thumb{border-radius:10px;aspect-ratio:4/3;object-fit:cover;width:100%;background:var(--s100)}
+
+  /* ---------- browser frame ---------- */
+  .frame{margin-top:22px}
+  .frame-cap{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+  .frame-cap b{font-size:14.5px}
+  .frame-cap code{background:#fff;border:1px solid var(--s200);border-radius:6px;padding:2px 7px;font-size:11.5px;color:var(--s600)}
+  .browser{border:1px solid var(--s200);border-radius:14px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+  .browser-bar{height:38px;background:var(--s100);border-bottom:1px solid var(--s200);display:flex;align-items:center;gap:7px;padding:0 14px}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .url{flex:1;margin-left:8px;background:#fff;border:1px solid var(--s200);border-radius:999px;font-size:11.5px;color:var(--s500);padding:4px 12px;font-family:ui-monospace,Menlo,monospace}
+  .viewport{background:var(--s50)}
+
+  /* ---------- fake web app chrome ---------- */
+  .wnav{height:58px;background:#fff;border-bottom:1px solid var(--s200);display:flex;align-items:center;gap:22px;padding:0 22px}
+  .wnav .links{display:flex;gap:18px;font-size:12.5px;color:var(--s600)}
+  .wnav .links span.hot{color:var(--brand-700);font-weight:600}
+  .wnav .right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--s500)}
+  .hero{background:linear-gradient(135deg,var(--brand-600),var(--brand-700));color:#fff;padding:38px 30px 42px;display:grid;grid-template-columns:1.05fr .95fr;gap:30px;align-items:center}
+  .hero h1{margin:12px 0 0;font-size:31px;line-height:1.14;letter-spacing:-.025em}
+  .hero h1 u{text-decoration-color:#fcd34d;text-decoration-thickness:4px;text-underline-offset:5px}
+  .hero p{color:var(--brand-100);font-size:14.5px;margin:12px 0 0;max-width:420px}
+  .hero img{border-radius:16px;box-shadow:var(--shadow-lg);aspect-ratio:16/10;object-fit:cover}
+  .hero .cta{display:flex;gap:10px;margin-top:22px}
+  .featgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:26px 30px}
+  .feat .ic{font-size:24px}
+  .feat h3{margin:9px 0 3px;font-size:14.5px}
+  .feat p{margin:0;font-size:12.5px;color:var(--s600)}
+  .wfoot{border-top:1px solid var(--s200);text-align:center;font-size:12px;color:var(--s500);padding:16px}
+  .page{padding:26px 30px 34px}
+  .page h1{font-size:21px;letter-spacing:-.02em;margin:0}
+  .filterbar{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px}
+  .pcard{overflow:hidden;border-radius:12px}
+  .pcard img{aspect-ratio:4/3;object-fit:cover;width:100%}
+  .pcard .body{padding:13px 14px 15px}
+  .price{color:var(--brand-700);font-weight:800;font-size:14.5px}
+  .price small{color:var(--s500);font-weight:400;font-size:11px}
+  .shell{display:grid;grid-template-columns:216px 1fr;gap:24px;padding:24px 30px 34px}
+  .shell main h1{font-size:20px;letter-spacing:-.02em;margin:0}
+  .side{padding:10px;height:fit-content}
+  .side .who{padding:8px 10px 10px}
+  .side nav{display:flex;flex-direction:column;gap:2px;font-size:12.5px;margin-top:6px}
+  .side nav span{padding:8px 10px;border-radius:7px;color:var(--s700)}
+  .side nav span.on{background:var(--brand-50);color:var(--brand-700);font-weight:600}
+  .stat{padding:16px}
+  .stat .k{font-size:11px;color:var(--s500);text-transform:capitalize}
+  .stat .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:3px}
+  .listrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--s100)}
+  .listrow:first-child{border-top:0}
+  .avatar{width:32px;height:32px;border-radius:50%;background:var(--brand-100);color:var(--brand-700);display:grid;place-items:center;font-size:12px;font-weight:700;flex:none}
+  table.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+  table.tbl th{text-align:left;font-weight:600;color:var(--s500);padding:6px 8px;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em}
+  table.tbl td{padding:10px 8px;border-top:1px solid var(--s100);color:var(--s700)}
+  .authwrap{display:grid;place-items:center;padding:44px 30px;background:var(--s50)}
+  .authcard{width:390px;padding:26px}
+  .fieldlabel{font-size:12px;font-weight:600;color:var(--s700);margin:0 0 5px;display:block}
+  .field{margin-top:14px}
+  .notebox{background:var(--brand-50);border:1px solid var(--brand-100);color:var(--brand-700);border-radius:9px;padding:10px 12px;font-size:11.5px}
+
+  /* ---------- phone ---------- */
+  .phones{display:flex;flex-wrap:wrap;gap:30px;margin-top:24px}
+  .phone-wrap{width:300px}
+  .phone{background:#0b1220;border-radius:40px;padding:9px;box-shadow:var(--shadow-lg)}
+  .phone-screen{position:relative;background:var(--s50);border-radius:32px;overflow:hidden;height:618px;display:flex;flex-direction:column}
+  .statusbar{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 4px;font-size:11px;font-weight:700;color:var(--s900);flex:none;z-index:3}
+  .island{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:78px;height:20px;border-radius:999px;background:#0b1220;z-index:4}
+  .statusbar.dark{color:#fff}
+  .sbody{flex:1;overflow:hidden;display:flex;flex-direction:column}
+  .tabbar{display:flex;justify-content:space-around;align-items:center;background:#fff;border-top:1px solid var(--s200);padding:7px 4px 9px;flex:none;margin-top:auto}
+  .tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:9.5px;color:var(--s500);width:52px}
+  .tab.on{color:var(--brand-600);font-weight:700}
+  .tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+  .m-head{background:var(--brand-600);color:#fff;padding:16px 20px 22px;border-bottom-left-radius:26px;border-bottom-right-radius:26px;flex:none}
+  .m-head h2{margin:0;font-size:19px;letter-spacing:-.02em}
+  .m-head p{margin:3px 0 0;font-size:12px;color:var(--brand-100)}
+  .mpad{padding:16px 16px 0;flex:1;min-height:0;overflow:hidden}
+  .tile{background:#fff;border:1px solid var(--s200);border-radius:16px;padding:15px}
+  .tile .ic{font-size:22px}
+  .tile .t{font-weight:600;font-size:12.5px;margin-top:9px}
+  .mcard{background:#fff;border:1px solid var(--s200);border-radius:16px;overflow:hidden}
+  .mcard img{height:104px;width:100%;object-fit:cover}
+  .mcard .body{padding:11px 13px 13px}
+  .stack{display:flex;flex-direction:column;gap:11px}
+  .phone-cap{margin:12px 0 0;font-size:13px;font-weight:600}
+  .phone-cap span{display:block;font-weight:400;font-size:11.5px;color:var(--s500);margin-top:2px}
+
+  /* ---------- backend section ---------- */
+  .dark{background:#0b1220;color:#e2e8f0;border-radius:14px;padding:20px 22px;overflow:auto}
+  .dark pre{margin:0;font-size:12px;line-height:1.65;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .dark .k{color:#7dd3fc}.dark .s{color:#86efac}.dark .c{color:#64748b}
+  .ep{font-size:12.5px}
+  .ep td{padding:8px 8px;border-top:1px solid var(--s100);vertical-align:top}
+  .m{font-family:ui-monospace,Menlo,monospace;font-size:11px;font-weight:700;border-radius:6px;padding:2px 7px;display:inline-block;min-width:44px;text-align:center}
+  .m.get{background:var(--blue-bg);color:var(--blue-fg)}
+  .m.post{background:var(--green-bg);color:var(--green-fg)}
+  .m.put{background:var(--amber-bg);color:var(--amber-fg)}
+  .m.del{background:var(--red-bg);color:var(--red-fg)}
+  footer.end{text-align:center;color:var(--s500);font-size:12.5px;padding:46px 20px 60px}
+
+  @media (max-width:900px){
+    .g3,.g4,.pgrid,.featgrid,.filterbar{grid-template-columns:repeat(2,1fr)}
+    .shell{grid-template-columns:1fr}
+    .hero{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<div class="topbar">
+  <div class="wrap">
+    <div class="mark">J</div>
+    <div>
+      <div class="brandname">JASMARTA</div>
+    </div>
+    <div class="tagline">Your Property, Managed Smartly While You Travel.</div>
+    <nav class="topnav">
+      <a href="#web">Web app</a>
+      <a href="#mobile">Mobile app</a>
+      <a href="#system">API &amp; stack</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ================= INTRO ================= -->
+<div class="intro">
+  <div class="wrap">
+    <span class="pill">Visual walkthrough · MVP scaffold · static preview</span>
+    <h1>Your Property, Managed <u>Smartly</u> While You Travel.</h1>
+    <p>Every screen below mirrors the real components in your <b>/JASMARTA</b> workspace — the React.js web app, the React Native (Expo) mobile app, and the Node/Express API that powers both. Nothing here is a mockup of a different product: same routes, same Tailwind tokens, same seeded demo data.</p>
+    <div class="stackrow">
+      <span>⚛️ React.js + Vite</span>
+      <span>📱 React Native + Expo</span>
+      <span>🟩 Node.js + Express</span>
+      <span>🍃 MongoDB</span>
+      <span>🔐 JWT + Firebase adapter</span>
+      <span>💳 Stripe</span>
+      <span>🎨 Tailwind CSS / NativeWind</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ================= WEB ================= -->
+  <section class="block" id="web">
+    <div class="eyebrow">Part 1 — Web app</div>
+    <h2>React.js + Vite + Tailwind CSS + Redux Toolkit</h2>
+    <p class="lead">Marketing site, public property browsing, tenant/owner dashboard, and the admin panel — all in one SPA with role-based routing and protected routes.</p>
+
+    <!-- Landing -->
+    <div class="frame">
+      <div class="frame-cap"><b>Landing page</b> <code>/</code> <span class="tiny">Public · hero, feature grid, footer</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px;letter-spacing:-.02em">JASMARTA</div>
+            <div class="links" style="margin-left:18px">
+              <span>Browse</span><span>My Leases</span>
+            </div>
+            <div class="right">
+              <span class="btn btn-secondary" style="font-size:12.5px">Sign in</span>
+              <span class="btn btn-primary" style="font-size:12.5px">Get started</span>
+            </div>
+          </div>
+
+          <div class="hero">
+            <div>
+              <span class="pill">For owners, tenants &amp; admins</span>
+              <h1>Your Property, Managed <u>Smartly</u> While You Travel.</h1>
+              <p>JASMARTA helps migrants and remote owners lease, maintain, and monitor their properties from anywhere in the world.</p>
+              <div class="cta">
+                <span class="btn" style="background:#fff;color:var(--brand-700)">Get started — free</span>
+                <span class="btn" style="background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.2)">Browse properties</span>
+              </div>
+            </div>
+            <img src="__HERO__" alt="Modern home managed remotely with JASMARTA" />
+          </div>
+
+          <div class="featgrid">
+            <div class="card feat p4"><div class="ic">🏠</div><h3>Property Management</h3><p>Add listings, photos, and pricing. Track status across your portfolio.</p></div>
+            <div class="card feat p4"><div class="ic">📄</div><h3>Leasing System</h3><p>Tenants apply online. Owners approve or reject in one click.</p></div>
+            <div class="card feat p4"><div class="ic">🛠️</div><h3>Maintenance Tracking</h3><p>Schedule tasks, report issues, and keep your property in top shape.</p></div>
+            <div class="card feat p4"><div class="ic">🔔</div><h3>Notifications</h3><p>Push &amp; email alerts for lease updates, rent reminders, and repairs.</p></div>
+            <div class="card feat p4"><div class="ic">💳</div><h3>Secure Payments</h3><p>Stripe-powered rent collection with automated receipts.</p></div>
+            <div class="card feat p4"><div class="ic">🛡️</div><h3>Admin Panel</h3><p>Comprehensive dashboard for platform oversight and dispute resolution.</p></div>
+          </div>
+          <div class="wfoot">© 2026 JASMARTA · Built with React, React Native, Node.js, MongoDB.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Browse -->
+    <div class="frame">
+      <div class="frame-cap"><b>Browse properties</b> <code>/properties</code> <span class="tiny">Public · filters by city, country, rent range, keyword</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/properties</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span class="hot">Browse</span><span>My Leases</span></div>
+            <div class="right">
+              <span>Hi, Chidi <span class="badge b-brand" style="margin-left:4px">tenant</span></span>
+              <span class="btn btn-secondary" style="font-size:12.5px">Logout</span>
+            </div>
+          </div>
+          <div class="page">
+            <h1>Browse properties</h1>
+            <div class="card filterbar" style="padding:14px">
+              <div class="input ph">City</div>
+              <div class="input ph">Country</div>
+              <div class="input ph">Min rent</div>
+              <div class="input ph">Max rent</div>
+              <div class="input">apartment</div>
+            </div>
+            <div class="pgrid">
+              <div class="pcard card">
+                <img src="__LEKKI__" alt="Modern 2BR Apartment in Lekki" />
+                <div class="body">
+                  <div class="between" style="align-items:flex-start">
+                    <div class="h3">Modern 2BR Apartment in Lekki</div>
+                    <span class="badge b-green">available</span>
+                  </div>
+                  <div class="muted" style="margin-top:4px">Lagos, Nigeria</div>
+                  <div class="between" style="margin-top:11px">
+                    <span class="price">$1500 <small>/mo</small></span>
+                    <span class="tiny">2 bd · 2 ba</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pcard card">
+                <img src="__BROOKLYN__" alt="Cozy Studio in Brooklyn" />
+                <div class="body">
+                  <div class="between" style="align-items:flex-start">
+                    <div class="h3">Cozy Studio in Brooklyn</div>
+                    <span class="badge b-amber">leased</span>
+                  </div>
+                  <div class="muted" style="margin-top:4px">Brooklyn, USA</div>
+                  <div class="between" style="margin-top:11px">
+                    <span class="price">$2200 <small>/mo</small></span>
+                    <span class="tiny">1 bd · 1 ba</span>
+                  </div>
+                </div>
+              </div>
+              <div class="pcard card">
+                <img src="__HERO__" alt="3BR Duplex with Garden" />
+                <div class="body">
+                  <div class="between" style="align-items:flex-start">
+                    <div class="h3">3BR Duplex with Garden</div>
+                    <span class="badge b-green">available</span>
+                  </div>
+                  <div class="muted" style="margin-top:4px">Abuja, Nigeria</div>
+                  <div class="between" style="margin-top:11px">
+                    <span class="price">$1800 <small>/mo</small></span>
+                    <span class="tiny">3 bd · 3 ba</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Property detail -->
+    <div class="frame">
+      <div class="frame-cap"><b>Property detail + lease application</b> <code>/properties/:id</code> <span class="tiny">Tenant applies · owner reviews</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/properties/68f2c1a9e4b0</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span class="hot">Browse</span><span>My Leases</span></div>
+            <div class="right"><span>Hi, Chidi <span class="badge b-brand" style="margin-left:4px">tenant</span></span><span class="btn btn-secondary" style="font-size:12.5px">Logout</span></div>
+          </div>
+          <div class="page">
+            <div class="grid" style="grid-template-columns:1.9fr 1fr">
+              <div>
+                <img src="__LEKKI__" style="border-radius:16px;width:100%;aspect-ratio:16/9;object-fit:cover" alt="" />
+                <h1 style="font-size:22px;margin:16px 0 0">Modern 2BR Apartment in Lekki</h1>
+                <div class="muted">24 Admiralty Way, Lagos, Nigeria</div>
+                <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:12px">
+                  <span class="badge b-brand">$1500/mo</span>
+                  <span class="badge b-slate">apartment</span>
+                  <span class="badge b-slate">2 bd · 2 ba</span>
+                  <span class="badge b-slate">980 sqft</span>
+                  <span class="badge b-green">available</span>
+                </div>
+                <p style="color:var(--s700);font-size:13.5px;margin:14px 0 0">
+                  Fully serviced apartment a short drive from Admiralty Way. Fitted kitchen, inverter power backup,
+                  gated compound with 24/7 security, and a balcony overlooking the estate. Ideal for a professional
+                  relocating to Lagos — the owner lives abroad and manages everything through JASMARTA.
+                </p>
+                <div style="margin-top:16px">
+                  <div class="h3">Amenities</div>
+                  <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:8px">
+                    <span class="badge b-brand">wifi</span><span class="badge b-brand">parking</span>
+                    <span class="badge b-brand">security</span><span class="badge b-brand">24/7 power</span>
+                  </div>
+                </div>
+                <hr class="sep" />
+                <div class="row" style="gap:12px">
+                  <div class="avatar">AY</div>
+                  <div>
+                    <div style="font-size:13px;font-weight:600">Amina Yusuf · Property owner</div>
+                    <div class="tiny">Currently in Toronto, Canada · respond via JASMARTA chat &amp; email</div>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="card p5">
+                  <div class="h3">Apply for a lease</div>
+                  <div class="tiny" style="margin-top:3px">Owner reviews applications manually.</div>
+                  <div class="field">
+                    <label class="fieldlabel">Move-in date</label>
+                    <div class="input">2026-10-01</div>
+                  </div>
+                  <div class="field">
+                    <label class="fieldlabel">Lease end</label>
+                    <div class="input">2027-09-30</div>
+                  </div>
+                  <div class="field">
+                    <label class="fieldlabel">Message to owner</label>
+                    <div class="input ph" style="height:74px">Hi Amina, I'm relocating to Lagos in October and…</div>
+                  </div>
+                  <div class="btn btn-primary" style="width:100%;margin-top:16px">Submit application</div>
+                  <div class="notebox" style="margin-top:12px">You'll get an email + push notification the moment the owner decides.</div>
+                </div>
+                <div class="card p4" style="margin-top:16px">
+                  <div class="tiny">Typical monthly cost</div>
+                  <div class="between" style="margin-top:6px"><span class="muted">Rent</span><b style="font-size:13px">$1,500.00</b></div>
+                  <div class="between" style="margin-top:4px"><span class="muted">Platform fee (MVP: 0%)</span><b style="font-size:13px">$0.00</b></div>
+                  <hr class="sep" />
+                  <div class="between"><b style="font-size:13.5px">Due at signing</b><b style="font-size:14px;color:var(--brand-700)">$1,500.00</b></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard overview -->
+    <div class="frame">
+      <div class="frame-cap"><b>Owner dashboard — overview</b> <code>/dashboard</code> <span class="tiny">Protected route · portfolio at a glance</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/dashboard</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span>Browse</span><span class="hot">My Properties</span><span>My Leases</span></div>
+            <div class="right"><span>Hi, Amina <span class="badge b-brand" style="margin-left:4px">owner</span></span><span class="btn btn-secondary" style="font-size:12.5px">Logout</span></div>
+          </div>
+
+          <div class="shell">
+            <aside class="card side">
+              <div class="who">
+                <div class="tiny">Logged in as</div>
+                <div style="font-weight:600;font-size:13px">Amina Yusuf</div>
+                <span class="badge b-brand" style="margin-top:5px">owner</span>
+              </div>
+              <nav>
+                <span class="on">Overview</span>
+                <span>My Properties</span>
+                <span>My Leases</span>
+                <span>Maintenance</span>
+              </nav>
+            </aside>
+
+            <main>
+              <h1>Welcome back, Amina 👋</h1>
+              <div class="muted" style="margin-top:2px">3 properties · 2 active leases · 1 open maintenance request</div>
+
+              <div class="grid g4" style="margin-top:18px">
+                <div class="card stat"><div class="k">Active leases</div><div class="v">2</div><div class="tiny" style="color:var(--green-fg);margin-top:4px">▲ 1 this month</div></div>
+                <div class="card stat"><div class="k">Rent collected (Sep)</div><div class="v">$3,700</div><div class="tiny" style="margin-top:4px">1 payment outstanding</div></div>
+                <div class="card stat"><div class="k">Open maintenance</div><div class="v">1</div><div class="tiny" style="margin-top:4px">Scheduled 3 Oct 2026</div></div>
+                <div class="card stat"><div class="k">Occupancy</div><div class="v">67%</div><div class="tiny" style="margin-top:4px">1 listing available</div></div>
+              </div>
+
+              <div class="grid" style="grid-template-columns:1.35fr 1fr;margin-top:18px">
+                <div class="card p4">
+                  <div class="between"><div class="h3">Recent activity</div><span class="tiny">Last 7 days</span></div>
+                  <div style="margin-top:6px">
+                    <div class="listrow">
+                      <div class="avatar">CO</div>
+                      <div style="flex:1">
+                        <div style="font-size:13px">Chidi Okafor paid October rent</div>
+                        <div class="tiny">Modern 2BR Apartment in Lekki · $1,500.00</div>
+                      </div>
+                      <span class="badge b-green">paid</span>
+                    </div>
+                    <div class="listrow">
+                      <div class="avatar">GB</div>
+                      <div style="flex:1">
+                        <div style="font-size:13px">Grace Bello applied for a lease</div>
+                        <div class="tiny">3BR Duplex with Garden · 12 months</div>
+                      </div>
+                      <span class="badge b-amber">pending</span>
+                    </div>
+                    <div class="listrow">
+                      <div class="avatar">🔧</div>
+                      <div style="flex:1">
+                        <div style="font-size:13px">Kitchen sink leaking — assigned</div>
+                        <div class="tiny">FixIt Pro Services · plumbing · high priority</div>
+                      </div>
+                      <span class="badge b-blue">in progress</span>
+                    </div>
+                    <div class="listrow">
+                      <div class="avatar">📄</div>
+                      <div style="flex:1">
+                        <div style="font-size:13px">Lease renewed for Cozy Studio in Brooklyn</div>
+                        <div class="tiny">Tenant: Daniel Mensah · ends 30 Sep 2027</div>
+                      </div>
+                      <span class="badge b-slate">renewed</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card p4">
+                  <div class="h3">Rent due this month</div>
+                  <div style="margin-top:8px">
+                    <div class="between" style="margin:10px 0"><span class="muted">Lekki — paid 1 Oct</span><span class="badge b-green">$1,500</span></div>
+                    <div class="between" style="margin:10px 0"><span class="muted">Brooklyn — due 5 Oct</span><span class="badge b-amber">$2,200</span></div>
+                    <div class="between" style="margin:10px 0"><span class="muted">Abuja — vacant</span><span class="badge b-slate">—</span></div>
+                  </div>
+                  <hr class="sep" />
+                  <div class="between"><b style="font-size:13.5px">Expected total</b><b style="font-size:14px">$3,700</b></div>
+                  <div class="btn btn-primary" style="width:100%;margin-top:12px">View leases</div>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My properties -->
+    <div class="frame">
+      <div class="frame-cap"><b>My properties + add listing</b> <code>/dashboard/properties</code> <span class="tiny">Owner only · add / edit / remove</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/dashboard/properties</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span>Browse</span><span class="hot">My Properties</span><span>My Leases</span></div>
+            <div class="right"><span>Hi, Amina <span class="badge b-brand" style="margin-left:4px">owner</span></span><span class="btn btn-secondary" style="font-size:12.5px">Logout</span></div>
+          </div>
+
+          <div class="shell">
+            <aside class="card side">
+              <div class="who">
+                <div class="tiny">Logged in as</div>
+                <div style="font-weight:600;font-size:13px">Amina Yusuf</div>
+                <span class="badge b-brand" style="margin-top:5px">owner</span>
+              </div>
+              <nav><span>Overview</span><span class="on">My Properties</span><span>My Leases</span><span>Maintenance</span></nav>
+            </aside>
+
+            <main>
+              <div class="between">
+                <h1>My properties</h1>
+                <span class="btn btn-primary" style="font-size:12.5px">+ Add property</span>
+              </div>
+
+              <div class="card p4" style="margin-top:16px">
+                <div class="h3">Add a property</div>
+                <div class="grid g2" style="margin-top:12px;gap:12px">
+                  <div><label class="fieldlabel">Title</label><div class="input">3BR Duplex with Garden</div></div>
+                  <div><label class="fieldlabel">Property type</label><div class="input">house ▾</div></div>
+                  <div><label class="fieldlabel">Street</label><div class="input ph">Plot 14, Jabi Lake Road</div></div>
+                  <div><label class="fieldlabel">City</label><div class="input">Abuja</div></div>
+                  <div><label class="fieldlabel">Country</label><div class="input">Nigeria</div></div>
+                  <div><label class="fieldlabel">Monthly rent (USD)</label><div class="input">1800</div></div>
+                  <div><label class="fieldlabel">Bedrooms</label><div class="input">3</div></div>
+                  <div><label class="fieldlabel">Bathrooms</label><div class="input">3</div></div>
+                  <div style="grid-column:1/-1"><label class="fieldlabel">Photo URL <span class="tiny">(Cloudinary/S3 upload on the roadmap)</span></label><div class="input ph">https://…</div></div>
+                  <div style="grid-column:1/-1"><label class="fieldlabel">Description</label><div class="input" style="height:64px">Spacious duplex with a private garden, borehole water…</div></div>
+                </div>
+                <div class="row" style="margin-top:14px">
+                  <span class="btn btn-primary">Save property</span>
+                  <span class="btn btn-secondary">Cancel</span>
+                </div>
+              </div>
+
+              <div class="card p4" style="margin-top:18px">
+                <table class="tbl">
+                  <thead><tr><th>Property</th><th>Location</th><th>Rent</th><th>Status</th><th>Actions</th></tr></thead>
+                  <tbody>
+                    <tr>
+                      <td><b>Modern 2BR Apartment in Lekki</b><div class="tiny">apartment · 2 bd · 980 sqft</div></td>
+                      <td>Lagos, Nigeria</td><td>$1,500/mo</td><td><span class="badge b-amber">leased</span></td>
+                      <td><span class="badge b-slate">Edit</span> <span class="badge b-slate">Delete</span></td>
+                    </tr>
+                    <tr>
+                      <td><b>Cozy Studio in Brooklyn</b><div class="tiny">studio · 1 bd · 460 sqft</div></td>
+                      <td>Brooklyn, USA</td><td>$2,200/mo</td><td><span class="badge b-amber">leased</span></td>
+                      <td><span class="badge b-slate">Edit</span> <span class="badge b-slate">Delete</span></td>
+                    </tr>
+                    <tr>
+                      <td><b>3BR Duplex with Garden</b><div class="tiny">house · 3 bd · 1,640 sqft</div></td>
+                      <td>Abuja, Nigeria</td><td>$1,800/mo</td><td><span class="badge b-green">available</span></td>
+                      <td><span class="badge b-slate">Edit</span> <span class="badge b-slate">Delete</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- My leases -->
+    <div class="frame">
+      <div class="frame-cap"><b>My leases</b> <code>/dashboard/leases</code> <span class="tiny">Owner approves/rejects · tenant pays rent</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/dashboard/leases</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span>Browse</span><span>My Properties</span><span class="hot">My Leases</span></div>
+            <div class="right"><span>Hi, Amina <span class="badge b-brand" style="margin-left:4px">owner</span></span><span class="btn btn-secondary" style="font-size:12.5px">Logout</span></div>
+          </div>
+
+          <div class="shell">
+            <aside class="card side">
+              <div class="who">
+                <div class="tiny">Logged in as</div>
+                <div style="font-weight:600;font-size:13px">Amina Yusuf</div>
+                <span class="badge b-brand" style="margin-top:5px">owner</span>
+              </div>
+              <nav><span>Overview</span><span>My Properties</span><span class="on">My Leases</span><span>Maintenance</span></nav>
+            </aside>
+
+            <main>
+              <h1>Leases &amp; applications</h1>
+
+              <div class="card p4" style="margin-top:16px">
+                <div class="between">
+                  <div>
+                    <div class="h3">Modern 2BR Apartment in Lekki</div>
+                    <div class="muted">Tenant: Chidi Okafor · 1 Oct 2026 → 30 Sep 2027 · $1,500/mo</div>
+                  </div>
+                  <span class="badge b-green">active</span>
+                </div>
+                <div class="row" style="margin-top:12px;gap:14px;flex-wrap:wrap">
+                  <span class="tiny">Next payment: <b style="color:var(--s700)">1 Nov 2026</b></span>
+                  <span class="tiny">Last paid: <b style="color:var(--s700)">1 Oct 2026</b></span>
+                  <span class="btn btn-secondary" style="font-size:12px">Message tenant</span>
+                  <span class="btn btn-secondary" style="font-size:12px">Terminate lease</span>
+                </div>
+              </div>
+
+              <div class="card p4" style="margin-top:14px">
+                <div class="between">
+                  <div>
+                    <div class="h3">Cozy Studio in Brooklyn — application</div>
+                    <div class="muted">Tenant: Daniel Mensah · 15 Nov 2026 → 14 Nov 2027 · $2,200/mo</div>
+                  </div>
+                  <span class="badge b-amber">pending</span>
+                </div>
+                <p class="muted" style="margin:10px 0 0;font-style:italic">“I'm relocating from Accra for work and can provide employer references…”</p>
+                <div class="row" style="margin-top:12px">
+                  <span class="btn btn-primary" style="font-size:12px">Approve</span>
+                  <span class="btn btn-secondary" style="font-size:12px">Reject</span>
+                </div>
+              </div>
+
+              <div class="card p4" style="margin-top:14px">
+                <div class="between">
+                  <div>
+                    <div class="h3">3BR Duplex with Garden — application</div>
+                    <div class="muted">Tenant: Grace Bello · 1 Dec 2026 → 30 Nov 2027 · $1,800/mo</div>
+                  </div>
+                  <span class="badge b-amber">pending</span>
+                </div>
+                <div class="row" style="margin-top:12px">
+                  <span class="btn btn-primary" style="font-size:12px">Approve</span>
+                  <span class="btn btn-secondary" style="font-size:12px">Reject</span>
+                </div>
+              </div>
+
+              <div class="card p4" style="margin-top:14px">
+                <div class="between">
+                  <div>
+                    <div class="h3">Lekki — previous tenant</div>
+                    <div class="muted">Tenant: Ngozi Eze · ended 30 Sep 2026</div>
+                  </div>
+                  <span class="badge b-red">terminated</span>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Maintenance -->
+    <div class="frame">
+      <div class="frame-cap"><b>Maintenance tracking</b> <code>/dashboard/maintenance</code> <span class="tiny">Tenants report issues · owners schedule &amp; assign</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/dashboard/maintenance</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span>Browse</span><span>My Properties</span><span>My Leases</span><span class="hot">Maintenance</span></div>
+            <div class="right"><span>Hi, Amina <span class="badge b-brand" style="margin-left:4px">owner</span></span><span class="btn btn-secondary" style="font-size:12.5px">Logout</span></div>
+          </div>
+
+          <div class="shell">
+            <aside class="card side">
+              <div class="who">
+                <div class="tiny">Logged in as</div>
+                <div style="font-weight:600;font-size:13px">Amina Yusuf</div>
+                <span class="badge b-brand" style="margin-top:5px">owner</span>
+              </div>
+              <nav><span>Overview</span><span>My Properties</span><span>My Leases</span><span class="on">Maintenance</span></nav>
+            </aside>
+
+            <main>
+              <h1>Maintenance</h1>
+
+              <div class="card p4" style="margin-top:16px">
+                <div class="grid g2" style="gap:12px">
+                  <div><label class="fieldlabel">Property</label><div class="input">Modern 2BR Apartment in Lekki ▾</div></div>
+                  <div><label class="fieldlabel">Title</label><div class="input">Kitchen sink leaking</div></div>
+                  <div style="grid-column:1/-1"><label class="fieldlabel">Describe the issue</label><div class="input" style="height:60px">Water pooling under the sink cabinet since Tuesday. Tenant sent photos.</div></div>
+                  <div><label class="fieldlabel">Category</label><div class="input">plumbing ▾</div></div>
+                  <div><label class="fieldlabel">Priority</label><div class="input">high ▾</div></div>
+                  <div style="grid-column:1/-1"><span class="btn btn-primary" style="width:100%">Submit request</span></div>
+                </div>
+              </div>
+
+              <div class="stack" style="margin-top:18px;display:grid;gap:12px">
+                <div class="card p4">
+                  <div class="between">
+                    <div class="h3">Kitchen sink leaking</div>
+                    <span class="badge b-blue">in progress</span>
+                  </div>
+                  <p class="muted" style="margin:6px 0 0">Water pooling under the sink cabinet since Tuesday.</p>
+                  <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap">
+                    <span class="badge b-slate">plumbing</span><span class="badge b-amber">high</span>
+                    <span class="badge b-slate">Lekki</span><span class="badge b-slate">assigned: FixIt Pro Services</span>
+                    <span class="badge b-slate">scheduled 3 Oct 2026</span>
+                  </div>
+                </div>
+                <div class="card p4">
+                  <div class="between">
+                    <div class="h3">AC not cooling in living room</div>
+                    <span class="badge b-amber">open</span>
+                  </div>
+                  <p class="muted" style="margin:6px 0 0">Unit runs but blows warm air; needs gas top-up.</p>
+                  <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap">
+                    <span class="badge b-slate">hvac</span><span class="badge b-amber">medium</span><span class="badge b-slate">Brooklyn</span>
+                  </div>
+                </div>
+                <div class="card p4">
+                  <div class="between">
+                    <div class="h3">Gate lock jammed</div>
+                    <span class="badge b-green">resolved</span>
+                  </div>
+                  <p class="muted" style="margin:6px 0 0">Locksmith replaced the cylinder on 26 Sep 2026 · receipt logged.</p>
+                  <div class="row" style="gap:8px;margin-top:10px;flex-wrap:wrap">
+                    <span class="badge b-slate">security</span><span class="badge b-red">urgent</span><span class="badge b-slate">Abuja</span>
+                  </div>
+                </div>
+              </div>
+            </main>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin -->
+    <div class="frame">
+      <div class="frame-cap"><b>Admin panel</b> <code>/admin</code> <span class="tiny">Admin only · platform oversight &amp; transactions</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/admin</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="links" style="margin-left:18px"><span>Browse</span><span class="hot">Admin</span></div>
+            <div class="right"><span>Hi, Site <span class="badge b-red" style="margin-left:4px">admin</span></span><span class="btn btn-secondary" style="font-size:12.5px">Logout</span></div>
+          </div>
+
+          <div class="page">
+            <h1>Admin dashboard</h1>
+            <div class="grid g4" style="margin-top:16px">
+              <div class="card stat"><div class="k">Total users</div><div class="v">128</div><div class="tiny" style="margin-top:4px">96 tenants · 30 owners · 2 admins</div></div>
+              <div class="card stat"><div class="k">Properties</div><div class="v">42</div><div class="tiny" style="margin-top:4px">31 leased · 8 available · 3 flagged</div></div>
+              <div class="card stat"><div class="k">Leases</div><div class="v">57</div><div class="tiny" style="margin-top:4px">9 awaiting owner decision</div></div>
+              <div class="card stat"><div class="k">Maintenance</div><div class="v">19</div><div class="tiny" style="margin-top:4px">4 overdue SLA</div></div>
+            </div>
+
+            <div class="grid" style="grid-template-columns:1.5fr 1fr;margin-top:18px">
+              <div class="card p4">
+                <div class="between"><div class="h3">Recent transactions</div><span class="tiny">Stripe · test mode</span></div>
+                <table class="tbl" style="margin-top:8px">
+                  <thead><tr><th>Tenant</th><th>Property</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                  <tbody>
+                    <tr><td>Chidi Okafor</td><td>Lekki apartment</td><td>$1,500.00</td><td><span class="badge b-green">succeeded</span></td><td>1 Oct 2026</td></tr>
+                    <tr><td>Daniel Mensah</td><td>Brooklyn studio</td><td>$2,200.00</td><td><span class="badge b-green">succeeded</span></td><td>1 Oct 2026</td></tr>
+                    <tr><td>Ngozi Eze</td><td>Lekki apartment</td><td>$1,500.00</td><td><span class="badge b-green">succeeded</span></td><td>1 Sep 2026</td></tr>
+                    <tr><td>Grace Bello</td><td>Abuja duplex</td><td>$1,800.00</td><td><span class="badge b-amber">pending</span></td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div>
+                <div class="card p4">
+                  <div class="h3">Leases by status</div>
+                  <div class="row" style="gap:8px;flex-wrap:wrap;margin-top:10px">
+                    <span class="badge b-slate">pending: 9</span>
+                    <span class="badge b-slate">approved: 6</span>
+                    <span class="badge b-slate">active: 34</span>
+                    <span class="badge b-slate">rejected: 4</span>
+                    <span class="badge b-slate">terminated: 4</span>
+                  </div>
+                </div>
+                <div class="card p4" style="margin-top:16px">
+                  <div class="h3">Disputes &amp; flags</div>
+                  <div class="listrow" style="padding-top:10px">
+                    <div class="avatar" style="background:var(--red-bg);color:var(--red-fg)">!</div>
+                    <div style="flex:1"><div style="font-size:12.5px">Rent refund requested</div><div class="tiny">Tenant: Ngozi Eze · 2 days ago</div></div>
+                  </div>
+                  <div class="listrow">
+                    <div class="avatar">📷</div>
+                    <div style="flex:1"><div style="font-size:12.5px">Duplicate listing reported</div><div class="tiny">Abuja duplex · 5 days ago</div></div>
+                  </div>
+                  <div class="btn btn-secondary" style="width:100%;margin-top:12px">Review disputes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div class="frame">
+      <div class="frame-cap"><b>Sign in</b> <code>/login</code> <span class="tiny">JWT by default · Firebase button switches provider</span></div>
+      <div class="browser">
+        <div class="browser-bar">
+          <span class="dot" style="background:#f87171"></span><span class="dot" style="background:#fbbf24"></span><span class="dot" style="background:#34d399"></span>
+          <span class="url">https://jasmarta.app/login</span>
+        </div>
+        <div class="viewport">
+          <div class="wnav">
+            <div class="mark" style="width:28px;height:28px;border-radius:8px;font-size:13px">J</div>
+            <div style="font-weight:800;font-size:14.5px">JASMARTA</div>
+            <div class="right"><span class="btn btn-secondary" style="font-size:12.5px">Sign in</span><span class="btn btn-primary" style="font-size:12.5px">Get started</span></div>
+          </div>
+          <div class="authwrap">
+            <div class="card authcard">
+              <div class="row" style="gap:10px">
+                <div class="mark" style="width:30px;height:30px;border-radius:9px;font-size:14px">J</div>
+                <div>
+                  <div style="font-weight:800;font-size:15px;letter-spacing:-.02em">JASMARTA</div>
+                  <div class="tiny">Your property, managed smartly.</div>
+                </div>
+              </div>
+              <hr class="sep" style="margin:16px 0 0" />
+              <div class="field"><label class="fieldlabel">Email</label><div class="input">owner@jasmarta.app</div></div>
+              <div class="field"><label class="fieldlabel">Password</label><div class="input">••••••••</div></div>
+              <div class="between" style="margin-top:12px"><span class="tiny">Forgot password?</span><span class="tiny">Register</span></div>
+              <div class="btn btn-primary" style="width:100%;margin-top:14px">Sign in</div>
+              <div class="row" style="gap:10px;margin:14px 0"><hr class="sep" style="flex:1;margin:0" /><span class="tiny">or</span><hr class="sep" style="flex:1;margin:0" /></div>
+              <div class="btn btn-secondary" style="width:100%">🔥 Continue with Firebase</div>
+              <div class="notebox" style="margin-top:14px">
+                <b>Demo accounts</b> (after <span class="mono">npm run seed</span>):<br />
+                owner@jasmarta.app · tenant@jasmarta.app · admin@jasmarta.app — password <span class="mono">password</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MOBILE ================= -->
+  <section class="block" id="mobile">
+    <div class="eyebrow">Part 2 — Mobile app</div>
+    <h2>React Native + Expo + NativeWind</h2>
+    <p class="lead">Same design tokens as the web app, five bottom tabs plus a detail stack. Auth is restored from AsyncStorage, so a returning user lands straight on the dashboard.</p>
+
+    <div class="phones">
+
+      <!-- Mobile login -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody" style="justify-content:center;padding:0 22px 30px">
+              <div class="mark" style="width:44px;height:44px;border-radius:14px;font-size:20px">J</div>
+              <div style="font-size:20px;font-weight:800;letter-spacing:-.02em;margin-top:14px">Welcome back</div>
+              <div class="muted" style="margin-top:3px">Sign in to manage your property.</div>
+              <div class="field"><label class="fieldlabel">Email</label><div class="input">tenant@jasmarta.app</div></div>
+              <div class="field"><label class="fieldlabel">Password</label><div class="input">••••••••</div></div>
+              <div class="btn btn-primary" style="width:100%;margin-top:16px">Sign in</div>
+              <div class="btn btn-secondary" style="width:100%;margin-top:9px">Create an account</div>
+              <div class="tiny" style="text-align:center;margin-top:16px">Demo: any seeded account · password <b>password</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">LoginScreen<span>JWT login → token saved to AsyncStorage → auto-restore</span></div>
+      </div>
+
+      <!-- Mobile home -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar dark" style="background:var(--brand-600)"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody">
+              <div class="m-head" style="border-radius:0 0 26px 26px;padding-top:6px">
+                <h2>Hi, Amina 👋</h2>
+                <p>Your property, managed smartly.</p>
+              </div>
+              <div class="mpad">
+                <div class="grid g2" style="gap:11px">
+                  <div class="tile"><div class="ic">🔍</div><div class="t">Browse properties</div></div>
+                  <div class="tile"><div class="ic">📄</div><div class="t">My leases</div></div>
+                  <div class="tile"><div class="ic">🛠️</div><div class="t">Maintenance</div></div>
+                  <div class="tile"><div class="ic">➕</div><div class="t">List a property</div></div>
+                </div>
+                <div class="tile" style="margin-top:11px">
+                  <div class="t" style="margin-top:0">Tips</div>
+                  <div class="tiny" style="margin-top:5px;line-height:1.75">
+                    • Turn on notifications to get rent reminders.<br />
+                    • Report maintenance issues with photos for faster resolution.<br />
+                    • Use the web dashboard to upload multiple photos at once.
+                  </div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab on">
+                  <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Browse
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 16h5"/></svg>Leases
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5.3 5.3l-9 9a2.83 2.83 0 0 1-4-4z"/></svg>Maintenance
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Profile
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">HomeScreen<span>Tab navigator · quick actions · tips card</span></div>
+      </div>
+
+      <!-- Mobile browse -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody">
+              <div style="padding:10px 16px 0">
+                <div style="font-size:19px;font-weight:800;letter-spacing:-.02em">Browse</div>
+                <div class="input ph" style="margin-top:10px">Search city, country…</div>
+              </div>
+              <div class="mpad" style="overflow:hidden">
+                <div class="mcard">
+                  <img src="__LEKKI__" alt="" />
+                  <div class="body">
+                    <div class="between" style="align-items:flex-start">
+                      <div style="font-weight:700;font-size:13px">Modern 2BR Apartment in Lekki</div>
+                      <span class="badge b-green">available</span>
+                    </div>
+                    <div class="tiny" style="margin-top:3px">Lagos, Nigeria</div>
+                    <div class="between" style="margin-top:8px">
+                      <span class="price">$1500 <small>/mo</small></span>
+                      <span class="tiny">2 bd · 2 ba</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mcard" style="margin-top:11px">
+                  <img src="__BROOKLYN__" alt="" />
+                  <div class="body">
+                    <div class="between" style="align-items:flex-start">
+                      <div style="font-weight:700;font-size:13px">Cozy Studio in Brooklyn</div>
+                      <span class="badge b-amber">leased</span>
+                    </div>
+                    <div class="tiny" style="margin-top:3px">Brooklyn, USA</div>
+                    <div class="between" style="margin-top:8px">
+                      <span class="price">$2200 <small>/mo</small></span>
+                      <span class="tiny">1 bd · 1 ba</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home
+                </div>
+                <div class="tab on">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Browse
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 16h5"/></svg>Leases
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5.3 5.3l-9 9a2.83 2.83 0 0 1-4-4z"/></svg>Maintenance
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Profile
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">BrowseScreen<span>Property cards · tap → PropertyDetail stack screen</span></div>
+      </div>
+
+      <!-- Mobile property detail -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar dark" style="background:var(--brand-600)"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody">
+              <div style="background:var(--brand-600);color:#fff;padding:2px 16px 12px;display:flex;align-items:center;gap:10px">
+                <span style="font-size:17px">‹</span>
+                <span style="font-weight:600;font-size:14px">Property</span>
+              </div>
+              <div style="flex:1;overflow:hidden">
+                <img src="__LEKKI__" style="width:100%;height:168px;object-fit:cover" alt="" />
+                <div style="padding:14px 16px 0">
+                  <div style="font-size:16px;font-weight:800;letter-spacing:-.02em">Modern 2BR Apartment in Lekki</div>
+                  <div class="tiny" style="margin-top:3px">24 Admiralty Way, Lagos, Nigeria</div>
+                  <div class="row" style="gap:7px;flex-wrap:wrap;margin-top:10px">
+                    <span class="badge b-brand">$1500/mo</span>
+                    <span class="badge b-slate">2 bd · 2 ba</span>
+                    <span class="badge b-slate">apartment</span>
+                  </div>
+                  <p class="muted" style="margin:11px 0 0">
+                    Fully serviced apartment with inverter backup, gated compound and 24/7 security.
+                    Owner lives abroad and manages everything through JASMARTA.
+                  </p>
+                  <div class="row" style="gap:7px;flex-wrap:wrap;margin-top:10px">
+                    <span class="badge b-brand">wifi</span><span class="badge b-brand">parking</span>
+                    <span class="badge b-brand">security</span><span class="badge b-brand">24/7 power</span>
+                  </div>
+                  <div class="tile" style="margin-top:13px;padding:13px">
+                    <div class="tiny">Owner</div>
+                    <div class="row" style="gap:9px;margin-top:6px">
+                      <div class="avatar">AY</div>
+                      <div><div style="font-size:12.5px;font-weight:600">Amina Yusuf</div><div class="tiny">in Toronto, Canada</div></div>
+                    </div>
+                  </div>
+                  <div class="btn btn-primary" style="width:100%;margin-top:14px">Apply for lease</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">PropertyDetailScreen<span>Stack header · gallery · apply CTA</span></div>
+      </div>
+
+      <!-- Mobile leases -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody">
+              <div style="padding:10px 16px 0">
+                <div style="font-size:19px;font-weight:800;letter-spacing:-.02em">My leases</div>
+              </div>
+              <div class="mpad" style="overflow:hidden">
+                <div class="mcard" style="padding:13px">
+                  <div class="between">
+                    <div style="font-weight:700;font-size:13px">Modern 2BR Apartment in Lekki</div>
+                    <span class="badge b-green">active</span>
+                  </div>
+                  <div class="tiny" style="margin-top:4px">1 Oct 2026 → 30 Sep 2027</div>
+                  <div class="between" style="margin-top:10px">
+                    <span class="price">$1500 <small>/mo</small></span>
+                    <span class="tiny">Next due 1 Nov</span>
+                  </div>
+                  <div class="btn btn-primary" style="width:100%;margin-top:11px;font-size:12.5px">Pay rent</div>
+                </div>
+
+                <div class="mcard" style="padding:13px;margin-top:11px">
+                  <div class="between">
+                    <div style="font-weight:700;font-size:13px">Cozy Studio in Brooklyn</div>
+                    <span class="badge b-amber">pending</span>
+                  </div>
+                  <div class="tiny" style="margin-top:4px">Applied 20 Sep 2026 · awaiting owner</div>
+                  <div class="between" style="margin-top:10px">
+                    <span class="price">$2200 <small>/mo</small></span>
+                    <span class="badge b-slate">12 months</span>
+                  </div>
+                </div>
+
+                <div class="mcard" style="padding:13px;margin-top:11px">
+                  <div class="between">
+                    <div style="font-weight:700;font-size:13px">3BR Duplex with Garden</div>
+                    <span class="badge b-red">rejected</span>
+                  </div>
+                  <div class="tiny" style="margin-top:4px">Owner comment: “Already reserved for December.”</div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Browse
+                </div>
+                <div class="tab on">
+                  <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 16h5"/></svg>Leases
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5.3 5.3l-9 9a2.83 2.83 0 0 1-4-4z"/></svg>Maintenance
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Profile
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">MyLeasesScreen<span>Status-driven cards · Stripe rent payment</span></div>
+      </div>
+
+      <!-- Mobile maintenance -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody">
+              <div style="padding:10px 16px 0">
+                <div style="font-size:19px;font-weight:800;letter-spacing:-.02em">Maintenance</div>
+              </div>
+              <div class="mpad" style="overflow:hidden">
+                <div class="mcard" style="padding:13px">
+                  <div style="font-weight:700;font-size:13px">Report an issue</div>
+                  <div class="input" style="margin-top:10px;font-size:12px">Modern 2BR Apartment in Lekki ▾</div>
+                  <div class="input" style="margin-top:8px;font-size:12px">Kitchen sink leaking</div>
+                  <div class="input" style="margin-top:8px;font-size:12px;color:var(--s400);height:52px">Describe the issue…</div>
+                  <div class="row" style="gap:8px;margin-top:8px">
+                    <div class="input" style="font-size:12px">plumbing ▾</div>
+                    <div class="input" style="font-size:12px">high ▾</div>
+                  </div>
+                  <div class="btn btn-primary" style="width:100%;margin-top:11px;font-size:12.5px">Submit request</div>
+                </div>
+
+                <div class="mcard" style="padding:13px;margin-top:11px">
+                  <div class="between">
+                    <div style="font-weight:700;font-size:13px">AC not cooling</div>
+                    <span class="badge b-blue">in progress</span>
+                  </div>
+                  <div class="tiny" style="margin-top:4px">Technician scheduled 3 Oct 2026, 10:00.</div>
+                  <div class="row" style="gap:6px;margin-top:9px">
+                    <span class="badge b-slate">hvac</span><span class="badge b-amber">medium</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tabbar">
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Browse
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 16h5"/></svg>Leases
+                </div>
+                <div class="tab on">
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5.3 5.3l-9 9a2.83 2.83 0 0 1-4-4z"/></svg>Maintenance
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Profile
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">MaintenanceScreen<span>Report issues · track status &amp; schedule</span></div>
+      </div>
+
+      <!-- Mobile profile -->
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="island"></div>
+            <div class="statusbar dark" style="background:var(--brand-600)"><span>9:41</span><span>▮▮▮ ᯤ ▰</span></div>
+            <div class="sbody">
+              <div class="m-head" style="border-radius:0 0 26px 26px;padding-top:6px;display:flex;gap:13px;align-items:center">
+                <div class="avatar" style="width:46px;height:46px;background:rgba(255,255,255,.18);color:#fff;font-size:15px">CO</div>
+                <div>
+                  <h2 style="font-size:17px">Chidi Okafor</h2>
+                  <p>tenant@jasmarta.app</p>
+                </div>
+              </div>
+              <div class="mpad">
+                <div class="tile">
+                  <div class="between"><span style="font-size:12.5px">Role</span><span class="badge b-brand">tenant</span></div>
+                  <hr class="sep" />
+                  <div class="between"><span style="font-size:12.5px">Phone</span><span class="muted">+234 803 ••• 4412</span></div>
+                  <hr class="sep" />
+                  <div class="between"><span style="font-size:12.5px">Active leases</span><span class="muted">1</span></div>
+                  <hr class="sep" />
+                  <div class="between"><span style="font-size:12.5px">Push notifications</span><span class="badge b-green">on</span></div>
+                </div>
+                <div class="tile" style="margin-top:11px;text-align:center;color:var(--red-fg);font-weight:600;font-size:12.5px">Log out</div>
+                <div class="tiny" style="text-align:center;margin-top:12px">JASMARTA v1.0.0 · MVP</div>
+              </div>
+              <div class="tabbar">
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Browse
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M10 12h5M10 16h5"/></svg>Leases
+                </div>
+                <div class="tab">
+                  <svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0 5.3 5.3l-9 9a2.83 2.83 0 0 1-4-4z"/></svg>Maintenance
+                </div>
+                <div class="tab on">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.5"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/></svg>Profile
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-cap">ProfileScreen<span>Account details · notification toggle · logout</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= BACKEND ================= -->
+  <section class="block" id="system">
+    <div class="eyebrow">Part 3 — What's behind the screens</div>
+    <h2>Node.js + Express + MongoDB API</h2>
+    <p class="lead">One REST API serves both clients. JWT is the default auth provider; flip <span class="mono">AUTH_PROVIDER=firebase</span> and the Firebase Admin SDK verifies tokens instead — controllers don't change.</p>
+
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:22px">
+      <div class="card p4">
+        <div class="h3">Project structure</div>
+        <div class="dark" style="margin-top:12px">
+<pre>JASMARTA/
+├── <span class="k">backend</span>/          <span class="c"># Express API + MongoDB</span>
+│   └── src/
+│       ├── config/db.js
+│       ├── models/      <span class="c"># User, Property, Lease,</span>
+│       │                <span class="c"># MaintenanceRequest, Notification</span>
+│       ├── controllers/ <span class="c"># auth, property, lease,</span>
+│       │                <span class="c"># maintenance, payment, admin</span>
+│       ├── routes/      <span class="c"># /api/... endpoints</span>
+│       ├── middleware/  <span class="c"># auth, validation, errors</span>
+│       ├── services/    <span class="s">authService.js</span>  <span class="c"># jwt|firebase</span>
+│       │                <span class="s">notificationService.js</span>
+│       └── utils/seed.js
+├── <span class="k">web</span>/              <span class="c"># React + Vite + Tailwind</span>
+│   └── src/
+│       ├── pages/       <span class="c"># Landing, Browse, Dashboard,</span>
+│       │                <span class="c"># Admin, Maintenance, MyLeases…</span>
+│       ├── components/  <span class="c"># Navbar, PropertyCard,</span>
+│       │                <span class="c"># PropertyForm, ProtectedRoute</span>
+│       └── store/slices/ <span class="c"># auth, properties, leases</span>
+└── <span class="k">mobile</span>/           <span class="c"># Expo + React Native + NativeWind</span>
+    └── src/
+        ├── screens/     <span class="c"># 8 screens</span>
+        ├── navigation/AppNavigator.js
+        └── store/       <span class="c"># auth slice + AsyncStorage</span></pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="card p4">
+          <div class="h3">API surface</div>
+          <table class="tbl ep" style="margin-top:8px">
+            <tbody>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/health</td><td class="tiny">public</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/auth/register · /login</td><td class="tiny">public</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/auth/firebase-login</td><td class="tiny">Firebase adapter</td></tr>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/auth/me</td><td class="tiny">any auth</td></tr>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/properties</td><td class="tiny">public feed</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/properties</td><td class="tiny">owner</td></tr>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/properties/mine/list</td><td class="tiny">owner</td></tr>
+              <tr><td><span class="m put">PUT</span> <span class="m del">DEL</span></td><td class="mono">/api/properties/:id</td><td class="tiny">owner (own)</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/leases/apply/:propertyId</td><td class="tiny">tenant</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/leases/:id/decision</td><td class="tiny">owner</td></tr>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/leases/mine</td><td class="tiny">tenant / owner</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/maintenance/:propertyId</td><td class="tiny">tenant</td></tr>
+              <tr><td><span class="m put">PUT</span></td><td class="mono">/api/maintenance/:id</td><td class="tiny">owner / admin</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/payments/create-intent</td><td class="tiny">tenant</td></tr>
+              <tr><td><span class="m post">POST</span></td><td class="mono">/api/payments/confirm</td><td class="tiny">tenant</td></tr>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/admin/dashboard</td><td class="tiny">admin</td></tr>
+              <tr><td><span class="m get">GET</span></td><td class="mono">/api/admin/transactions</td><td class="tiny">admin</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card p4" style="margin-top:16px">
+          <div class="h3">Run it locally</div>
+          <div class="dark" style="margin-top:12px">
+<pre><span class="c"># 1 · install everything (npm workspaces)</span>
+npm install
+
+<span class="c"># 2 · configure</span>
+cp backend/.env.example backend/.env   <span class="c"># MONGODB_URI + JWT_SECRET</span>
+cp web/.env.example web/.env
+
+<span class="c"># 3 · seed demo users, properties, leases</span>
+npm run seed
+
+<span class="c"># 4 · start the stack</span>
+npm run dev:backend   <span class="c"># http://localhost:5000/api</span>
+npm run dev:web       <span class="c"># http://localhost:5173</span>
+npm run dev:mobile    <span class="c"># Expo → scan with Expo Go</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card p4">
+        <div class="h3">🔐 Auth — swap in one env var</div>
+        <p class="muted" style="margin:8px 0 0">
+          <span class="mono">AUTH_PROVIDER=jwt</span> → bcrypt + jsonwebtoken, 7-day tokens.<br />
+          <span class="mono">AUTH_PROVIDER=firebase</span> → Firebase Admin verifies ID tokens from
+          <span class="mono">POST /api/auth/firebase-login</span> and auto-creates the Mongo user.
+        </p>
+      </div>
+      <div class="card p4">
+        <div class="h3">💳 Payments</div>
+        <p class="muted" style="margin:8px 0 0">
+          Stripe PaymentIntents are created server-side and a webhook marks rent paid. MVP flow confirms
+          directly; drop in Stripe Elements on the web/mobile checkout for real card entry. PayPal is an
+          open adapter slot in <span class="mono">paymentController.js</span>.
+        </p>
+      </div>
+      <div class="card p4">
+        <div class="h3">🔔 Notifications</div>
+        <p class="muted" style="margin:8px 0 0">
+          Every lease decision, application, and maintenance update writes a <span class="mono">Notification</span>
+          record and optionally sends an email (SMTP/Ethereal). Expo push is the remaining hook for mobile.
+        </p>
+      </div>
+    </div>
+
+    <div class="card p4" style="margin-top:18px">
+      <div class="h3">Honest status of this build</div>
+      <div class="grid g2" style="margin-top:10px;gap:10px">
+        <div>
+          <div class="tiny" style="color:var(--green-fg);font-weight:700;margin-bottom:6px">✔ WORKING IN THE SCAFFOLD</div>
+          <div class="muted">Auth (JWT + Firebase adapter) · property CRUD · lease apply/approve/reject/terminate ·
+          maintenance requests &amp; status updates · Stripe PaymentIntent + webhook route · notification records + email ·
+          admin stats &amp; transactions · Redux Toolkit state on both clients · role-based protected routes</div>
+        </div>
+        <div>
+          <div class="tiny" style="color:var(--amber-fg);font-weight:700;margin-bottom:6px">◻ NEXT FOR PRODUCTION</div>
+          <div class="muted">Stripe Elements checkout UI · image uploads (Cloudinary/S3) instead of photo URLs ·
+          Expo push notifications · admin user-management screens · automated tests · deploy web → Vercel, API → Render,
+          mobile → App Store / Play Store · then the roadmap items: AI recommendations, blockchain leases, i18n, IoT locks</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="end">
+    JASMARTA — Your Property, Managed Smartly While You Travel.<br />
+    Static preview generated from the live source in <span class="mono">/JASMARTA</span> · 85 files · React.js · React Native · Node/Express · MongoDB
+  </footer>
+</div>
+
+</body>
+</html>

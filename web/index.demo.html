@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JASMARTA — Interactive Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      /*
+       * Storage shim — MUST run before the app bundle.
+       *
+       * Sandboxed iframes (e.g. the workspace preview, sandbox="allow-scripts")
+       * have an opaque origin, where touching window.localStorage throws a
+       * SecurityError. The app reads localStorage at module-init time (authSlice
+       * restores the token) and writes on login, so without this the app would
+       * crash on load. Falls back to an in-memory store that behaves the same.
+       */
+      (function () {
+        function memoryStorage() {
+          var map = new Map();
+          return {
+            getItem: function (k) { return map.has(String(k)) ? map.get(String(k)) : null; },
+            setItem: function (k, v) { map.set(String(k), String(v)); },
+            removeItem: function (k) { map.delete(String(k)); },
+            clear: function () { map.clear(); },
+            key: function (i) { return Array.from(map.keys())[i] === undefined ? null : Array.from(map.keys())[i]; },
+            get length() { return map.size; },
+          };
+        }
+        var usable = true;
+        try {
+          window.localStorage.setItem('__t', '1');
+          window.localStorage.removeItem('__t');
+        } catch (e) {
+          usable = false;
+        }
+        if (!usable) {
+          var shim = memoryStorage();
+          try {
+            Object.defineProperty(window, 'localStorage', { value: shim, configurable: true, writable: true });
+          } catch (e2) {
+            try { window.localStorage = shim; } catch (e3) { /* nothing more we can do */ }
+          }
+          window.__JASMARTA_MEMORY_STORAGE__ = true;
+        }
+      })();
+
+      /*
+       * Form-bridge shim — also required in sandboxed iframes.
+       *
+       * A sandbox without `allow-forms` blocks native form submission and never
+       * fires the `submit` event, so React's onSubmit (login, register, create
+       * listing, report issue, apply for lease) would silently do nothing.
+       * Chromium logs: "Blocked form submission ... 'allow-forms' permission is not set."
+       *
+       * This converts the click/Enter into an explicitly dispatched `submit` event
+       * on the form, which React handles exactly as usual. No effect outside a
+       * sandbox — where a real submit would work, e.preventDefault() keeps it a SPA.
+       */
+      (function () {
+        function fireSubmit(form) {
+          form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+        }
+        document.addEventListener('click', function (e) {
+          var btn = e.target && e.target.closest
+            ? e.target.closest('button[type="submit"], input[type="submit"], form button')
+            : null;
+          if (!btn) return;
+          var form = btn.form || btn.closest('form');
+          if (!form) return;
+          e.preventDefault();   // stop the blocked native path
+          fireSubmit(form);
+        }, true);
+        document.addEventListener('keydown', function (e) {
+          if (e.key !== 'Enter') return;
+          var el = e.target;
+          if (!el || !el.form) return;
+          if (el.tagName === 'TEXTAREA') return;   // textareas keep newlines
+          e.preventDefault();
+          fireSubmit(el.form);
+        }, true);
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.demo.jsx"></script>
+  </body>
+</html>

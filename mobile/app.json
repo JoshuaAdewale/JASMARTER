@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "JASMARTA",
+    "slug": "jasmarta",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2563eb"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.jasmarta.client"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#2563eb"
+      },
+      "package": "app.jasmarta.client"
+    },
+    "extra": {
+      "apiUrl": "http://localhost:5000/api"
+    }
+  }
+}
